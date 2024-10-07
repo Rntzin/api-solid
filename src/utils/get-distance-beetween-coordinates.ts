@@ -1,9 +1,9 @@
+// Função que retorna a distância entre dois pontos em KM
+
 export interface Coordinate {
   latitude: number;
   longitude: number;
 }
-
-// Função que retorna a distância entre dois pontos em KM
 
 export function getDistanceBetweenCoordinates(
   from: Coordinate,

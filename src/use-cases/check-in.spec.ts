@@ -3,6 +3,8 @@ import { InMemoryCheckInsRepository } from "@/repositories/in-memory/in-memory-c
 import { CheckInUseCase } from "./check-in";
 import { InMemoryGymsRepository } from "@/repositories/in-memory/in-memory-gyms-repositosy";
 import { Decimal } from "@prisma/client/runtime/library";
+import { MaxNumberOfCheckInsError } from "./errors/max-number-of-check-ins";
+import { MaxDistanceError } from "./errors/max-distance-error";
 
 // const usersRepository = new InMemoryUsersRepository();
 // const registerUseCase = new RegisterUseCase(usersRepository);
@@ -11,18 +13,18 @@ let checkInsRepository: InMemoryCheckInsRepository;
 let sut: CheckInUseCase;
 let gymsRepository: InMemoryGymsRepository;
 
-describe("Register Use Case", () => {
-  beforeEach(() => {
+describe("Check-in Use Case", () => {
+  beforeEach(async () => {
     checkInsRepository = new InMemoryCheckInsRepository();
     gymsRepository = new InMemoryGymsRepository();
     sut = new CheckInUseCase(checkInsRepository, gymsRepository);
 
-    gymsRepository.items.push({
+    await gymsRepository.create({
       id: "gym-01",
       title: "Javascript Gym",
       description: "",
-      latitude: new Decimal(-10.7399757),
-      longitude: new Decimal(-37.811244),
+      latitude: -10.7399757,
+      longitude: -37.811244,
       phone: "",
     });
 
@@ -61,7 +63,7 @@ describe("Register Use Case", () => {
         userLatitude: -10.7399757,
         userLongitude: -37.811244,
       })
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxNumberOfCheckInsError);
   });
   it("should be able to check in", async () => {
     const { checkIn } = await sut.execute({
@@ -112,6 +114,6 @@ describe("Register Use Case", () => {
         userLatitude: -10.7399757,
         userLongitude: -37.811244,
       })
-    ).rejects.toBeInstanceOf(Error);
+    ).rejects.toBeInstanceOf(MaxDistanceError);
   });
 });
